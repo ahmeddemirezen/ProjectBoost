@@ -4,10 +4,24 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour
 {
+    Rigidbody rigidBody;
+    //rocket pyhsics
+    float rocketMass=80.0f;
+    float fuelMass=120.0f;
+    //********************
+    //Timer for rotation
+    private float rotTimer= 0.0f;
+    const float rotWaitTime=0.01f;
+    //timer for location(thrust)
+    private float locTimer=0.0f;
+    const float locWaitTime=0.05f;
+    private float visualTime=0.0f;
+    //*******************************
     // Start is called before the first frame update
     void Start()
     {
-        
+        rigidBody=GetComponent<Rigidbody>();
+        rigidBody.mass=rocketMass+fuelMass;
     }
     
     // Update is called once per frame
@@ -18,17 +32,41 @@ public class Rocket : MonoBehaviour
 
     void ProcessInput()
     {
-        if(Input.GetKey(KeyCode.Space))
+        rotTimer += Time.deltaTime;
+        locTimer += Time.deltaTime;
+        if(locTimer>locWaitTime)
         {
-            print("Thrusting");
+            locTimer=visualTime;
+            locTimer-=locWaitTime;
+            if(Input.GetKey(KeyCode.Space))
+            {    
+                if(fuelMass>0)
+                {
+                    rigidBody.AddRelativeForce(0.0f,10000.0f,0.0f);
+                    SettingRocketMass();
+                    print(rigidBody.mass);
+                }
+            }
         }
-        if(Input.GetKey(KeyCode.A))
+        
+        if(rotTimer>rotWaitTime)
         {
-            print("Rotating Left");
+            rotTimer=visualTime;
+            rotTimer-=rotWaitTime;
+            if(Input.GetKey(KeyCode.A))
+            {
+                transform.Rotate(Vector3.forward);
+            }
+            if(Input.GetKey(KeyCode.D))
+            {
+                transform.Rotate(-Vector3.forward);
+            }
         }
-        if(Input.GetKey(KeyCode.D))
-        {
-            print("Rotating Right");
-        }
+    }
+
+    void SettingRocketMass()
+    {
+        fuelMass-=1.0f;
+        rigidBody.mass=rocketMass+fuelMass;
     }
 }
