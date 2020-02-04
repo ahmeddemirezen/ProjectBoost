@@ -45,7 +45,8 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Rocket.cs" />
+     <Compile Include="Assets\Scripts\FuelScript.cs" />
+     <Compile Include="Assets\Scripts\Rocket.cs" />
  <Reference Include="UnityEngine">
  <HintPath>C:/Program Files/Unity/Hub/Editor/2019.3.0f6/Editor/Data/Managed/UnityEngine/UnityEngine.dll</HintPath>
  </Reference>
