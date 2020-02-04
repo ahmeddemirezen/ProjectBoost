@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Rocket : MonoBehaviour
 {
+    AudioSource audioSource;
     Rigidbody rigidBody;
     //rocket pyhsics
     float rocketMass=80.0f;
@@ -21,6 +22,7 @@ public class Rocket : MonoBehaviour
     void Start()
     {
         rigidBody=GetComponent<Rigidbody>();
+        audioSource=GetComponent<AudioSource>();
         rigidBody.mass=rocketMass+fuelMass;
     }
     
@@ -43,9 +45,14 @@ public class Rocket : MonoBehaviour
                 if(fuelMass>0)
                 {
                     rigidBody.AddRelativeForce(0.0f,10000.0f,0.0f);
+                    AudioController("play");
                     SettingRocketMass();
                     print(rigidBody.mass);
                 }
+            }
+            else
+            {
+                AudioController("stop");
             }
         }
         
@@ -68,5 +75,20 @@ public class Rocket : MonoBehaviour
     {
         fuelMass-=1.0f;
         rigidBody.mass=rocketMass+fuelMass;
+    }
+
+    void AudioController(string audioFuncCheck)
+    {
+        if(audioFuncCheck=="play")
+        {
+            if(!audioSource.isPlaying)
+            {
+                audioSource.Play();
+            }
+        }
+        else if(audioFuncCheck=="stop")
+        {
+            audioSource.Stop();
+        }
     }
 }
