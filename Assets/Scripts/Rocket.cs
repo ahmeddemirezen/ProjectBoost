@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Rocket : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class Rocket : MonoBehaviour
 
     //rocket pyhsics
     float rocketMass=80.0f;
-    float fuelMass=120.0f;
+    [SerializeField] float fuelMass=120.0f;
 
     //Timer for rotation
     private float rotTimer= 0.0f;
@@ -21,19 +22,27 @@ public class Rocket : MonoBehaviour
     [SerializeField] float locWaitTime=0.05f;
     private float visualTime=0.0f;
 
+    enum State {Alive,Dying,Transcending};
+    State state=State.Alive;
+
+
     // Start is called before the first frame update
     void Start()
     {
         rigidBody=GetComponent<Rigidbody>();
         audioSource=GetComponent<AudioSource>();
         rigidBody.mass=rocketMass+fuelMass;
+        state=State.Alive;
     }
     
     // Update is called once per frame
     void Update()
     {
-        Rotate();
-        Thrust();
+        if(state==State.Alive)
+        {
+            Rotate();
+            Thrust();
+        }
     }
     
     //rotate is changed rocket rotation
@@ -105,17 +114,35 @@ public class Rocket : MonoBehaviour
 
     void OnCollisionEnter(Collision collision)
     {
+        if(state!=State.Alive){ return; }
+
         switch(collision.gameObject.tag)
         {
             case "Friendly":
                 print("OK");//todo delete
                 break;
             case "Fuel":
-                print("Fuel");//todo delete
+                fuelMass=120;
                 break;
+            case "Finish":
+                state=State.Transcending;
+                AudioController("stop");
+                Invoke("LoadNextLevel",1.0f);
+                break;    
             default:
-                print("Dead");//todo delete
+                state=State.Dying;
+                AudioController("stop");
+                Invoke("LoadCurrentLevel",1.0f);
                 break;        
-        }
+        }   
+    }
+
+    void LoadNextLevel()
+    {
+        SceneManager.LoadScene(2);
+    }
+    void LoadCurrentLevel()
+    {
+        SceneManager.LoadScene(0);
     }
 }
