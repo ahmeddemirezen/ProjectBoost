@@ -29,6 +29,7 @@ public class Rocket : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        QualitySettings.vSyncCount = 2;
         rigidBody=GetComponent<Rigidbody>();
         audioSource=GetComponent<AudioSource>();
         rigidBody.mass=rocketMass+fuelMass;
@@ -119,7 +120,6 @@ public class Rocket : MonoBehaviour
         switch(collision.gameObject.tag)
         {
             case "Friendly":
-                print("OK");//todo delete
                 break;
             case "Fuel":
                 fuelMass=120;
