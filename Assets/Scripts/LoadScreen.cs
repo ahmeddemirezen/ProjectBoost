@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class LoadScreen : MonoBehaviour
 {
     //rotation time
@@ -10,6 +11,7 @@ public class LoadScreen : MonoBehaviour
     float rotWait=0.0005f;
     float visualTime=0.0f;
     
+
     void Start()
     {
         Invoke("LoadNextLevel",3.0f);

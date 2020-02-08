@@ -25,6 +25,15 @@ public class Rocket : MonoBehaviour
     enum State {Alive,Dying,Transcending};
     State state=State.Alive;
 
+    Scene currentScene;
+    //audios 
+    [SerializeField] AudioClip mainEngine;
+    [SerializeField] AudioClip winSound;
+    [SerializeField] AudioClip explosionSound;
+    //particles
+    [SerializeField] ParticleSystem mainEngineParticle;
+    [SerializeField] ParticleSystem winSoundParticle;
+    [SerializeField] ParticleSystem explosionSoundParticle;
 
     // Start is called before the first frame update
     void Start()
@@ -34,6 +43,8 @@ public class Rocket : MonoBehaviour
         audioSource=GetComponent<AudioSource>();
         rigidBody.mass=rocketMass+fuelMass;
         state=State.Alive;
+        currentScene=SceneManager.GetActiveScene();
+        Debug.Log(currentScene.buildIndex);
     }
     
     // Update is called once per frame
@@ -78,14 +89,16 @@ public class Rocket : MonoBehaviour
                 if (fuelMass > 0)
                 {
                     rigidBody.AddRelativeForce(0.0f, 11000.0f, 0.0f);
-                    AudioController("play");
+                    AudioController("play",mainEngine);
                     SettingRocketMass();
+                    mainEngineParticle.Play();
                     //print(rigidBody.mass);
                 }
             }
             else
             {
-                AudioController("stop");
+                AudioController("stop",mainEngine);
+                mainEngineParticle.Stop();
             }
         }
     }
@@ -98,13 +111,13 @@ public class Rocket : MonoBehaviour
     }
     
     //thursting audio control
-    void AudioController(string audioFuncCheck)
+    void AudioController(string audioFuncCheck,AudioClip playThatSound)
     {
         if(audioFuncCheck=="play")
         {
             if(!audioSource.isPlaying)
             {
-                audioSource.Play();
+                audioSource.PlayOneShot(playThatSound);
             }
         }
         else if(audioFuncCheck=="stop")
@@ -126,12 +139,16 @@ public class Rocket : MonoBehaviour
                 break;
             case "Finish":
                 state=State.Transcending;
-                AudioController("stop");
+                AudioController("stop",mainEngine);
+                AudioController("play",winSound);
+                winSoundParticle.Play();
                 Invoke("LoadNextLevel",1.0f);
                 break;    
             default:
                 state=State.Dying;
-                AudioController("stop");
+                AudioController("stop",mainEngine);
+                AudioController("play",explosionSound);
+                explosionSoundParticle.Play();
                 Invoke("LoadCurrentLevel",1.0f);
                 break;        
         }   
@@ -139,10 +156,10 @@ public class Rocket : MonoBehaviour
 
     void LoadNextLevel()
     {
-        SceneManager.LoadScene(2);
+        SceneManager.LoadScene("Load Screen");
     }
     void LoadCurrentLevel()
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene(currentScene.buildIndex);
     }
 }
